@@ -1,0 +1,198 @@
+---
+title: "Lab1"
+author: "Anna Matarazzo"
+date: "2/21/2021"
+bibliography: export-data-2.bib
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+## Written QALMRI
+
+This is a QALMRI for @slamecka_retroactive_1960.
+
+
+### Q
+
+_Broad question_: Is Retroactive Inhibition (RI) sensitive to connected speech?
+
+_Specific question_: Will manipulating the degree of practice have an effect on the recall of a text in the same way it has on the unconnected random list of words?
+
+### A
+
+_Hypothesis_: 
+
++	recall of a prose text is a subject to RI.
++	the number of recalled words is a direct function of amount of rehearsal in Original Learning (OL).
++	the number of recalled words is an inverse function of rehearsal in Interpolated Learning (IL).
+
+_Alternative hypothesis_: 
+
++	recall of a prose text is not a subject to RI.
++	the number of recalled words is not a direct function of amount of rehearsal in OL. 
++ the number of recalled words is not an inverse function of rehearsal in IL.
+
+### L
+
+-	if the mean number of correct anticipations increases with the number of trials of OL, then the number of recalled words is a direct function of amount of rehearsal in OL; 
+
+- if the mean number of correct anticipations does not increase with the number of trials of OL, then the number of recalled words is not a function of amount of rehearsal in OL.
+
+-	if the number of correct anticipations decreases as the number of IL trials increases, then the number of recalled words is an inverse function of rehearsal in IL;
+
+- if the number of correct anticipations does not decrease as the number of IL trials increases, then the number of recalled words is not an inverse function of rehearsal in IL.
+
+
+### M
+
+36 people were divided into 9 groups depending on the number of OL (2, 4, 8) and IL (0, 4, 8) trials.
+
+Passages of text were grouped in 4 pairs – 1st and 3rd in OL, 2nd and 4th in IL, counterbalanced. 
+
+Sessions began with color-guessing. Then a number of OL and IL trials happened based on the assigned groups. 
+
+After a 9.5-minute break, participants were given 4 relearning sessions on OL, followed by 3 relearning sessions on IL.
+
+Independent and dependent variables (IV and DV): IV-1 – number of OL trials, IV-2 – number of IL trials, DV – number of correct anticipations. 
+
+
+
+### R
+
+Increasing the number of OL at every level of IL produced the increase in the mean number of correct anticipations.
+
+IL means increased with increasing OL trials.
+
+Recall as a function of OL is approximately a linear function.
+
+Regardless of the number of OL, IL-0 group recalled more words than IL-4 and IL-8 groups, thus RI was obtained.
+
+At IL-4 and IL-8, RI percent went down with the increase in OL. RI percent decreased as the number of IL went up.
+
+
+### I
+
+Recall of a text written in prose was a subject of RI. 
+
+OL and IL acquisition was a function of number of practice trials.
+
+Recall was a direct function of the number of OL trials and an inverse function of the number of IL trials.
+
+One possible confound of the data collection process might have been the fact that participants in groups IL-0 and IL-4 needed to fill in the temporal gap by getting involved into “rest activity” of color-guessing. 
+
+There is a possibility that if the same was true for OL-2 and OL-4 groups (this is not clear from the paper), then the decreased number of correct anticipators as a function of number of OL trials could have been a function of increased time or increased number of “color guessing activities”.
+
+
+
+
+## Coding Problem
+
+1. Create a dataframe that capable of representing the design, in as complete a way as you can, in the @slamecka_retroactive_1960 paper.
+
+```{r}
+
+n <- 36
+OL <- 3
+IL <- 3
+
+design <- matrix(4,ncol=3, nrow=3)
+colnames(design) <- c("OL_2","OL_4","OL_8")
+row.names(design) <- c("IL_0","IL_4","IL_8")
+
+subjects <- 1:36
+
+OL <- rep(c(2,4,8),12)
+IL <- rep(c(0,4,8), each=12)
+recall <- sample(0:20, 36, replace=TRUE)
+
+library(tibble)
+
+long_design <- tibble(subjects,
+                       OL,
+                       IL,
+                      recall)
+
+library(dplyr)
+long_design %>%
+  group_by(OL,IL) %>%
+  count()
+
+# mixed design
+
+mixed_design <- tribble(
+~Subjects, ~OL, ~IL,
+#--|--|----
+1,2,0,
+1,4,4,
+1,8,8,
+2,4,0,
+2,8,4,
+2,2,8,
+3,8,0,
+3,2,4,
+3,4,8,
+4,2,4,
+4,4,0,
+4,8,8,
+5,4,4,
+5,2,8,
+5,8,0,
+6,8,4,
+6,4,8,
+6,2,0,
+7,2,8,
+7,4,0,
+7,8,4,
+8,4,8,
+8,2,4,
+8,8,0,
+9,8,8,
+9,4,4,
+9,2,0
+)
+
+mixed_design %>%
+  group_by(OL,IL) %>%
+  count()
+
+full_mixed_design <- rbind(mixed_design,
+                           mixed_design,
+                           mixed_design,
+                           mixed_design) %>%
+  
+  mutate(Subjects = rep(1:36, each = 3),
+         recall = sample(0:20, 36*3, replace=TRUE))
+
+
+full_mixed_design %>%
+  group_by(OL, IL) %>%
+  summarize(mean_recall = mean(recall), .groups="drop")
+
+```
+
+
+
+## References
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
