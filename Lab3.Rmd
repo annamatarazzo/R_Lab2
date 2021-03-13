@@ -1,0 +1,51 @@
+---
+title: "Lab3"
+author: "Anna Matarazzo"
+date: "3/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Problems
+
+### Problem 1
+
+The problem for this week is to develop a little bit of content (tutorial material) that could be added to this lab. (6 points)
+
+
+
+#### The difference between partial and semi-partioal correlation
+
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
