@@ -19,12 +19,24 @@ The problem for this week is to develop a little bit of content (tutorial materi
 
 
 
-#### The difference between partial and semi-partioal correlation
+### The difference between partial and semi-partial correlation
+
+Partial correlation coefficient is a measure that is used to describe the relationship between two variables when BOTH of these variables are controlled (or partialled out) for the effects of a THIRD variable.
 
 
+A semi-partial correlation describes the relationship between two variables when ONE of them is controlled for the effect of a THIRD variable.
 
+Let's consider having three variables: X, Y, Z. The relationship of interest is between X and Y (so let's call them variables of interest). To illustrate the difference between types of correlation, let's illustrate the following scenarios:
 
+1. None of the variables of interest are correlated with Z. 
 
+PIC 1
+
+2. Both of the variables of interest are correlated with Z.
+
+PIC 2
+
+3. Only one variable of interest (for example, Y) is correlated with Z.
 
 
 ```{r}
@@ -34,6 +46,11 @@ The problem for this week is to develop a little bit of content (tutorial materi
 
 
 
+
+
+
+Since both X and Y has nothing to do with Z
+This would be an example of linear correlation between two variables - X and Y.
 
 
 
