@@ -26,22 +26,31 @@ Partial correlation coefficient is a measure that is used to describe the relati
 
 A semi-partial correlation describes the relationship between two variables when ONE of them is controlled for the effect of a THIRD variable.
 
-Let's consider having three variables: X, Y, Z. The relationship of interest is between X and Y (so let's call them variables of interest). To illustrate the difference between types of correlation, let's illustrate the following scenarios:
+Let's consider having three variables: X, Y, Z. The relationship of interest is between X and Y (so let's call them variables of interest). To illustrate the difference between types of correlation, let's consider the following scenarios:
 
 1. None of the variables of interest are correlated with Z. 
 
-PIC 1
+```{r, out.width="40%", echo=FALSE}
+knitr::include_graphics("images/pic1.png")
+```
+
+
 
 2. Both of the variables of interest are correlated with Z.
 
-PIC 2
+```{r, out.width="40%", echo=FALSE}
+knitr::include_graphics("images/pic2.png")
+```
+
+
 
 3. Only one variable of interest (for example, Y) is correlated with Z.
 
-
-```{r}
-
+```{r, out.width="40%", echo=FALSE}
+knitr::include_graphics("images/pic3.png")
 ```
+
+
 
 
 
