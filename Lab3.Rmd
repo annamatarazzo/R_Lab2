@@ -2,6 +2,7 @@
 title: "Lab3"
 author: "Anna Matarazzo"
 date: "3/13/2021"
+bibliography: export-data-3.bib
 output: html_document
 ---
 
@@ -35,9 +36,10 @@ Let's take a look at three variables: X, Y, Z. For the purposes of our example, 
 knitr::include_graphics("images/pic1.png")
 ```
 
-For this situation, all three types of correlation  (correlation between all three variables, partial correlation and semi-partial correlation) have the identical value, since both X and Y have nothing to do with Z.
+For this situation, all three types of correlation  (correlation between all three variables, partial correlation and semi-partial correlation) have the identical value, since both X and Y have nothing to do with Z (@kim_compound_2012).
 
 ```{r}
+
 # To create a Venn diagram in R you have to manually draw circles and fill them in
 
 # Venn diagram with ggplot
@@ -70,7 +72,9 @@ options(repr.plot.height=8, repr.plot.width=8)
 
 ```
 
-So for this situation, "Lost Time" part of the Venn diagram will be both, partial and semi-partial correlation, as well as correlation of all three variables.
+So for this situation, "Lost Time" part of the Venn diagram will be both, partial and semi-partial correlation, as well as correlation of all three variables (see the table below).
+
+
 
 
 ### Scenario 2
@@ -159,9 +163,7 @@ options(repr.plot.height=8, repr.plot.width=8)
 
 
 
-All three correlations are different from each other for the situation of Figure 1b. The rationale for the partial and semipartial correlations is to obtain a direct or pure relationship between two random variables. For example, in Figure 1b, although X and Y are uncorrelated to each other, the correlation can be a nonzero value due to Z. In this case, by removing the effect of Z, their direct or true relationship can be obtained. Likewise, the significant relationship between X and Y in Figure 1c can be due to the hidden relationship between X and Z. For these reasons, the partial or the semipartial correlations must be used to obtain the true relationship between X and Y if the relationship between (X, Y) and Z is present not due to measurement errors. However, it is possible that the partial or semipartial correlations can lead to an incorrect correlation if the correlation between (X, Y) and Z is spurious (caused by noise). 
-
-
+All three correlations are different from each other for the situation of Figure 1b. The rationale for the partial and semipartial correlations is to obtain a direct or pure relationship between two random variables. For example, in Figure 1b, although X and Y are uncorrelated to each other, the correlation can be a nonzero value due to Z. In this case, by removing the effect of Z, their direct or true relationship can be obtained. Likewise, the significant relationship between X and Y in Figure 1c can be due to the hidden relationship between X and Z. For these reasons, the partial or the semipartial correlations must be used to obtain the true relationship between X and Y if the relationship between (X, Y) and Z is present not due to measurement errors. However, it is possible that the partial or semipartial correlations can lead to an incorrect correlation if the correlation between (X, Y) and Z is spurious (caused by noise).
 
 
 ## References
