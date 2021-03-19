@@ -16,44 +16,48 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Problem 1
 
-The problem for this week is to develop a little bit of content (tutorial material) that could be added to this lab. (6 points)
+  The problem for this week is to develop a little bit of content (tutorial material) that could be added to this lab. (6 points)
 
 
 
 ### The difference between partial and semi-partial correlation
 
-The partial correlation coefficient is a measure that is used to describe the relationship between two random variables when BOTH of these variables are controlled (or partialled out) for the effects of a THIRD variable. In other words, the effect of the whole third variable is eliminated.
+  The partial correlation coefficient is a measure that is used to describe the relationship between two random variables when BOTH of these variables are controlled (or partialled out) for the effects of a THIRD variable. In other words, the effect of the whole third variable is eliminated.
 
-The semi-partial correlation describes the relationship between two variables when ONE of them is controlled for the effect of a THIRD variable. In other words, the effect of a fraction of a third variable is eliminated.
+  The semi-partial correlation describes the relationship between two variables when ONE of them is controlled for the effect of a THIRD variable. In other words, the effect of a fraction of a third variable is eliminated.
 
-Let's take a look at three variables: X, Y, Z. For the purposes of our example, the relationship of interest is between X and Y (so let's call them variables of interest). To illustrate the difference between types of correlation, let's consider the following scenarios:
+  Let's take a look at three variables: X, Y, Z. For the purposes of our example, the relationship of interest is between X and Y (so let's call them variables of interest). To illustrate the difference between types of correlation, let's consider the following scenarios:
 
 ### Scenario 1
 
 **None of the variables of interest are correlated with Z.**
 
-```{r, out.width="40%", echo=FALSE}
+```{r, out.width="20%", echo=FALSE}
 knitr::include_graphics("images/pic1.png")
 ```
 
-For this situation, all three types of correlation  (correlation between all three variables, partial correlation and semi-partial correlation) have the identical value, since both X and Y have nothing to do with Z (@kim_compound_2012).
+  For this situation, all three types of correlation  (correlation between all three variables, partial correlation and semi-partial correlation) have the identical value, since both X and Y have nothing to do with Z (@kim_compound_2012).
+
+  Here is an example:
+
+
 
 ```{r}
 
-# To create a Venn diagram in R you have to manually draw circles and fill them in
+# To create a Venn diagram with ggplot you have to manually draw and label circles
 
-# Venn diagram with ggplot
 library(tidyverse)
 library(ggforce) #adds geom_circle
 
 #Data frame to specify circle and text position
+
 data <- data.frame(x=c(0,1,-1),
                    y=c(-2,1,1),
                    tx=c(0,1.5,-1.5),
                    ty=c(-3, 1.3, 1.3),
                    cat = c("Z","Y","X"))
 
-# Plot circles and add annotations for overlapping segments
+# Plot circles and add annotations
 
 ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
   geom_circle(alpha=0.5, size=1, color="black", show.legend=FALSE) +
@@ -62,17 +66,34 @@ ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
   annotate(geom="text", x=-0.9, y=0, label="Cute Cats",color="darkorange", size = 7) +
         annotate(geom="text", x=0.9, y=0, label="Internet",color="darkgreen", size = 7) +
         annotate(geom="text", x=0, y= -2.5, label="Excersise",color="blue", size = 7) +
-        theme_void() 
-
-
-# Set plot size
-
-options(repr.plot.height=8, repr.plot.width=8)
-
+        theme_void()
 
 ```
 
-So for this situation, "Lost Time" part of the Venn diagram will be both, partial and semi-partial correlation, as well as correlation of all three variables (see the table below).
+  For this situation, "Lost Time" part of the Venn diagram will be both, partial and semi-partial correlation, as well as correlation of all three variables (see the table below):
+
+
+
+```{r}
+
+library("kableExtra")
+
+
+text_tbl <- data.frame(
+  Type_of_correlation = c("Correlation_xyz", "Partial_xy", "Semi-partial_xy"),
+  Part_of_the_venn = c(
+    "Lost Time",
+    "Lost Time", 
+    "Lost Time"
+  )
+)
+
+kbl(text_tbl) %>%
+  kable_paper(full_width = F) %>%
+  column_spec(1, bold = T, border_right = T) %>%
+  column_spec(2, width = "10em", background = "lightyellow")
+
+```
 
 
 
@@ -81,13 +102,12 @@ So for this situation, "Lost Time" part of the Venn diagram will be both, partia
 
 **Both of the variables of interest are correlated with Z.**
 
-```{r, out.width="40%", echo=FALSE}
+```{r, out.width="20%", echo=FALSE}
 knitr::include_graphics("images/pic2.png")
 ```
 
-   ......This is the situation, where ......
-   
-   
+
+  All three types of correlation are different in this situation.    
    
 ```{r}
 data <- data.frame(x=c(0,1,-1),
@@ -101,19 +121,32 @@ ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
   geom_text(aes(x = tx, y = ty, label = cat), size=7) +
   annotate(geom="text", x=1, y=0, label="Pasta", color="darkred", size=5) +
   annotate(geom="text", x=-1, y=0, label="Batter", color="darkred", size=5) +
-  annotate(geom="text", x=0, y=1.5, label="Omelette", color="darkred", size=5) +
+  annotate(geom="text", x=0, y=1.5, label="Omelet", color="darkred", size=5) +
   annotate(geom="text", x=0, y=0.6, label="Pancakes", color="darkred", size=5) +
   annotate(geom="text", x=-1.7, y=1.7, label="Flour",color="darkorange", size = 7) +
         annotate(geom="text", x=1.7, y=1.7, label="Egg",color="darkgreen", size = 7) +
         annotate(geom="text", x=0, y= -1, label="Milk",color="blue", size = 7) +
         theme_void() 
 
-options(repr.plot.height=8, repr.plot.width=8)
-
-
 ```
 
+```{r}
 
+text_tbl <- data.frame(
+  Type_of_correlation = c("Correlation_xyz", "Partial_xy", "Semi-partial_xy"),
+  Part_of_the_venn = c(
+    "Omelet + Pancakes + Batter + Pasta",
+    "Omelet + Pancakes", 
+    "Omelet"
+  )
+)
+
+kbl(text_tbl) %>%
+  kable_paper(full_width = F) %>%
+  column_spec(1, bold = T, border_right = T) %>%
+  column_spec(2, width = "20em", background = "lightyellow")
+
+```
 
 
 
@@ -123,11 +156,11 @@ options(repr.plot.height=8, repr.plot.width=8)
 
 **Only one variable of interest (for example, Y) is correlated with Z.**
 
-```{r, out.width="40%", echo=FALSE}
+```{r, out.width="20%", echo=FALSE}
 knitr::include_graphics("images/pic3.png")
 ```
 
-......In case of Figure 1c, the partial correlation is exactly same as the semipartial correlation, but is different from the correlation since Y is correlated with Z.....
+  In case of this scenario, the partial correlation is exactly same as the semi-partial correlation, but is different from the correlation since Y is correlated with Z.
 
 ```{r}
 data <- data.frame(x= c( 2.1,1.3, -1),
@@ -147,9 +180,23 @@ ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
         annotate(geom="text", x=2, y= -1.5, label="Procrastinating",color="blue", size = 6) +
         theme_void()
 
+```
 
-options(repr.plot.height=8, repr.plot.width=8)
+```{r}
 
+text_tbl <- data.frame(
+  Type_of_correlation = c("Correlation_xyz", "Partial_xy", "Semi-partial_xy"),
+  Part_of_the_venn = c(
+    "Powersnacking + Procrastisnacking",
+    "Powersnacking", 
+    "Powersnacking"
+  )
+)
+
+kbl(text_tbl) %>%
+  kable_paper(full_width = F) %>%
+  column_spec(1, bold = T, border_right = T) %>%
+  column_spec(2, width = "20em", background = "lightyellow")
 
 ```
 
@@ -160,10 +207,12 @@ options(repr.plot.height=8, repr.plot.width=8)
 
 
 
+  The idea behind the partial and semi-partial correlations is to acquire a pure relationship between the two variables. 
 
+  For example, even if X and Y are uncorrelated to each other, it's possible to get nonzero correlation value due to Z, so by removing the effect of Z, we get true relationship between X and Y. 
 
+  Similarly, the significant relationship between X and Y can be due to the hidden relationship between X and Z. For these reasons, the partial or the semi-partial correlations must be used to obtain the true relationship between X and Y. 
 
-All three correlations are different from each other for the situation of Figure 1b. The rationale for the partial and semipartial correlations is to obtain a direct or pure relationship between two random variables. For example, in Figure 1b, although X and Y are uncorrelated to each other, the correlation can be a nonzero value due to Z. In this case, by removing the effect of Z, their direct or true relationship can be obtained. Likewise, the significant relationship between X and Y in Figure 1c can be due to the hidden relationship between X and Z. For these reasons, the partial or the semipartial correlations must be used to obtain the true relationship between X and Y if the relationship between (X, Y) and Z is present not due to measurement errors. However, it is possible that the partial or semipartial correlations can lead to an incorrect correlation if the correlation between (X, Y) and Z is spurious (caused by noise).
 
 
 ## References
