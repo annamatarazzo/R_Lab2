@@ -32,7 +32,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **None of the variables of interest are correlated with Z.**
 
-```{r, out.width="20%", echo=FALSE}
+```{r, out.width="25%", echo=FALSE}
 knitr::include_graphics("images/pic1.png")
 ```
 
@@ -42,7 +42,7 @@ knitr::include_graphics("images/pic1.png")
 
 
 
-```{r}
+```{r, out.width="70%", echo=TRUE}
 
 # To create a Venn diagram with ggplot you have to manually draw and label circles
 
@@ -74,7 +74,7 @@ ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
 
 
 
-```{r}
+```{r, echo=TRUE}
 
 library("kableExtra")
 
@@ -102,14 +102,14 @@ kbl(text_tbl) %>%
 
 **Both of the variables of interest are correlated with Z.**
 
-```{r, out.width="20%", echo=FALSE}
+```{r, out.width="25%", echo=FALSE}
 knitr::include_graphics("images/pic2.png")
 ```
 
 
   All three types of correlation are different in this situation.    
    
-```{r}
+```{r, out.width="70%", echo=FALSE}
 data <- data.frame(x=c(0,1,-1),
                    y=c(-.5,1,1),
                    tx=c(0,1.7,-1.7),
@@ -130,7 +130,7 @@ ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 
 text_tbl <- data.frame(
   Type_of_correlation = c("Correlation_xyz", "Partial_xy", "Semi-partial_xy"),
@@ -156,13 +156,13 @@ kbl(text_tbl) %>%
 
 **Only one variable of interest (for example, Y) is correlated with Z.**
 
-```{r, out.width="20%", echo=FALSE}
+```{r, out.width="25%", echo=FALSE}
 knitr::include_graphics("images/pic3.png")
 ```
 
   In case of this scenario, the partial correlation is exactly same as the semi-partial correlation, but is different from the correlation since Y is correlated with Z.
 
-```{r}
+```{r, out.width="70%", echo=FALSE}
 data <- data.frame(x= c( 2.1,1.3, -1),
                    y= c(-1,  1  ,  1),
                    tx=c( 2,  1.7, -1.7),
@@ -182,7 +182,7 @@ ggplot(data, aes(x0 = x, y0 = y, r =1.5, fill = cat)) +
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 
 text_tbl <- data.frame(
   Type_of_correlation = c("Correlation_xyz", "Partial_xy", "Semi-partial_xy"),
