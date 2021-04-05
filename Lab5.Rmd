@@ -1,0 +1,247 @@
+---
+title: "Lab5"
+author: "Anna Matarazzo"
+date: "4/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Problems 
+
+
+Consider a design with 3 groups, and 10 people per group. Assume that the dependent variable is assumed to be normally distributed, and use unit normal distributions with mean = 0, and sd = 1 in your simulations.
+
+  1. Create simulated data for the above design that could be produced by the null hypothesis, and that results in a F value that is smaller than the critical value for F in this design (assume alpha = .05). Report the ANOVA, and show a ggplot of the means in the simulated data. Furthermore, display the individual data points on top of the means. Would you reject the null hypothesis in this situation, and would you be incorrect or correct in rejecting the null? (3 points)
+
+  2. Create simulated data for the above design that could be produced by the null hypothesis, and that results in a F value that is larger than the critical value for F in this design (assume alpha = .05). Report the ANOVA, and show a ggplot of the means in the simulated data. Furthermore, display the individual data points on top of the means. Would you reject the null hypothesis in this situation, and would you be incorrect or correct in rejecting the null? (3 points)
+
+  3. Bonus Question
+
+  In the lab we saw that F-distribution is robust to violations of the assumptions of ANOVA. For example, the simulation of the null based on a bi-modal distribution was very similar to the true F distribution. For this bonus question, show that you can “break” the F-distribution. Specifically, can you run a simulation that samples numbers from a non-normal distribution that does produce a very different looking F-distribution? (3 points)
+
+
+```{r}
+library(cowplot)
+library(ggplot2)
+library(tibble)
+library(dplyr)
+```
+
+
+
+## Problem 1 and 2 - My Version (Well not only mine, I obviously used the code from your lab, but I did this problem before watching the solution video)
+
+```{r}
+
+n_per_level <- 10
+levels <- 3
+
+F_crit <- qf(.95,2,27)
+
+for (i in 1:100){
+  alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                        IV = as.factor(rep(1:levels, each = n_per_level)),
+                        DV = c(rnorm(n_per_level, 0, 1),
+                               rnorm(n_per_level, 0, 1),
+                               rnorm(n_per_level, 0, 1)
+                               )
+                        )
+  aov.out <- aov(DV ~ IV, data = alternative_data)
+  sim_F <- summary(aov.out)[[1]]$`F value`[1]
+  if (sim_F<F_crit) break
+  
+}
+  
+  p <- ggplot(alternative_data, aes(x=IV, y=DV))+
+  geom_bar(stat="summary", fun="mean", position = "dodge")+
+  geom_point()
+  
+  if (sim_F < F_crit) {
+  ggdraw(p) + 
+  draw_label("Bingo! Your F is smaller than F critical", color = "#C0A0A0", size = 20, angle = 40)}
+
+ 
+
+```
+
+
+
+
+
+
+
+```{r}
+
+n_per_level <- 10
+levels <- 3
+
+F_crit <- qf(.95,2,27)
+
+for (i in 1:100){
+  alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                        IV = as.factor(rep(1:levels, each = n_per_level)),
+                        DV = c(rnorm(n_per_level, 0, 1),
+                               rnorm(n_per_level, 0, 1),
+                               rnorm(n_per_level, 0, 1)
+                               )
+                        )
+  aov.out <- aov(DV ~ IV, data = alternative_data)
+  sim_F_2 <- summary(aov.out)[[1]]$`F value`[1]
+  if (sim_F_2>F_crit) break
+}
+  
+  p <- ggplot(alternative_data, aes(x=IV, y=DV))+
+  geom_bar(stat="summary", fun="mean", position = "dodge")+
+  geom_point()
+  
+  if (sim_F_2 > F_crit) {
+  ggdraw(p) + 
+  draw_label("Ta-da! Your F is larger than F critical", color = "Light Blue", size = 20, angle = 40)}
+
+ 
+
+```
+
+
+
+## Problem 1 and 2 - Key Version 
+
+```{r}
+
+levels <- 3
+n_per_level <- 10
+
+critical_F <- qf(.95,2,27)
+
+for (i in 1:1000) {
+  
+  random_data <- tibble(subjects=1:(levels*n_per_level),
+                        IV=as.factor(rep(1:levels, each=n_per_level)),
+                        DV=rnorm(levels*n_per_level, 0, 1)
+                        )
+aov.out <- aov(DV~IV, data=random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+
+if(simulated_F < critical_F) break
+  
+}
+
+summary(aov.out)
+
+ggplot(random_data, aes(IV, DV))+
+  geom_bar(stat="summary", fun="mean")+
+  geom_point()
+
+
+```
+
+```{r}
+
+levels <- 3
+n_per_level <- 10
+
+critical_F <- qf(.95,2,27)
+
+for (i in 1:1000) {
+  
+  random_data <- tibble(subjects=1:(levels*n_per_level),
+                        IV=as.factor(rep(1:levels, each=n_per_level)),
+                        DV=rnorm(levels*n_per_level, 0, 1)
+                        )
+aov.out <- aov(DV~IV, data=random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+
+if(simulated_F > critical_F) break
+  
+}
+
+simulated_F > critical_F
+
+summary(aov.out)
+
+ggplot(random_data, aes(IV, DV))+
+  geom_bar(stat="summary", fun="mean")+
+  geom_point()
+
+
+```
+
+## Problem 3 - Key Version 
+
+
+
+
+```{r}
+
+levels <- 3
+n_per_level <- 10
+
+save_F_values <- length(1000)
+  for(i in 1:1000){
+    random_data <- tibble(subjects = 1:(levels*n_per_level),
+                          IV = as.factor(rep(1:levels, each = n_per_level)),
+                          DV = rt(levels*n_per_level, 1)
+                                 )
+                        
+    aov.out <- aov(DV ~ IV, data = random_data)
+    simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+    save_F_values[i] <- simulated_F
+  }
+
+
+F_comparison <- tibble(type = rep(c("analytic","simulated_rt"), each = 1000),
+                        F_value = c(rf(1000,levels-1, (levels*n_per_level)-levels), save_F_values))
+
+ggplot(F_comparison, aes(x=F_value, color=type))+
+  geom_freqpoly(bins=50)
+
+
+```
+
+
+
+## Problem 3 - My Version (based on your version)
+
+I found a distribution called Dirac distribution, which is essentially a distribution made of the same number, depending on the location (it's a distribution concentrated at one point). So if the location is 0, all the numbers of the distribution are 0s. For our example, I chose the location at 1.
+
+Here is a Wikipedia definition: "In mathematics, the Dirac delta function is a generalized function or distribution introduced by physicist Paul Dirac. It is used to model the density of an idealized point mass or point charge as a function equal to zero everywhere except for zero and whose integral over the entire real line is equal to one."
+
+```{r}
+library(distr)
+
+D <- Dirac(location = 1)
+
+
+levels <- 3
+n_per_level <- 10
+
+save_F_values <- length(1000)
+  for(i in 1:1000){
+    random_data <- tibble(subjects = 1:(levels*n_per_level),
+                          IV = as.factor(rep(1:levels, each = n_per_level)),
+                          DV = r(D)(levels*n_per_level)
+                                 )
+                        
+    aov.out <- aov(DV ~ IV, data = random_data)
+    simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+    save_F_values[i] <- simulated_F
+  }
+
+
+F_comparison <- tibble(type = rep(c("analytic","simulated_rt"), each = 1000),
+                        F_value = c(rf(1000,levels-1, (levels*n_per_level)-levels), save_F_values))
+
+ggplot(F_comparison, aes(x=F_value, color=type))+
+  geom_freqpoly(bins=50)
+
+
+```
+
+
+
+
+
