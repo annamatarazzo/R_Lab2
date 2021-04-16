@@ -1,0 +1,167 @@
+---
+title: "Lab8"
+author: "Anna Matarazzo"
+date: "4/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Problems
+
+Consider a 2x2 design. Assume the DV is measured from a normal distribution with mean 0, and standard deviation 1. Assume that the main effect of A causes a total shift of .5 standard deviations of the mean between the levels. Assume that level 1 of B is a control, where you expect to measure the standard effect of A. Assume that level 2 of B is an experimental factor intended to reduce the effect of A by .25 standard deviations.
+
+A. create a ggplot2 figure that depicts the expected results from this design (2 points)
+
+Conduct simulation-based power analyses to answer the questions.
+
+B. How many subjects are needed to detect the main effect of A with power = .8? (2 points)
+
+C. How many subjects are needed to detect the interaction effect with power = .8? (2 points)
+
+
+```{r}
+#load libraries
+library(tibble)
+library(ggplot2)
+library(patchwork)
+
+# define 2-factor score model
+grand_mean <- 0
+A <- c(0,.5)
+B <- c(0,0)
+AB <- c(0,0,0,-.25)
+
+# create design table
+model_data <- tibble()
+for(i in 1:length(A)){
+  for(j in 1:length(B)){
+    IVA <- i
+    IVB <- j
+    DV <- grand_mean+A[i]+B[j]+AB[(i-1)*length(B)+j]
+    sc_GM <- grand_mean
+    sc_A <- A[i]
+    sc_B <- B[j]
+    sc_AB <- AB[(i-1)*length(B)+j]
+    row_entry <- tibble(IVA,IVB,DV,
+                        sc_GM,sc_A,sc_B,sc_AB)
+    model_data <- rbind(model_data,row_entry)
+  }
+}
+
+knitr::kable(model_data)
+```
+
+
+
+
+```{r}
+# generate plots
+bar_graph <- ggplot(model_data,
+                    aes(y=DV,
+                        x=as.factor(IVA),
+                        fill=as.factor(IVB)))+
+  geom_bar(stat='identity', position='dodge')
+
+line_graph <- ggplot(model_data,
+                     aes(y=DV,
+                         x=IVA,
+                         linetype=as.factor(IVB)))+
+  geom_line()+
+  geom_point()
+
+(bar_graph/line_graph)
+```
+
+
+
+B.
+
+```{r}
+# N per group
+N <- 3
+
+A_pvalue <- c()
+B_pvalue <- c()
+AB_pvalue <- c()
+for(i in 1:10){
+  IVA <- rep(rep(c("1","2"), each=2),N)
+  IVB <- rep(rep(c("1","2"), 2),N)
+  DV <- c(replicate(N,c(rnorm(1,0,1), # means A1B1
+                        rnorm(1,0,1), # means A1B2
+                        rnorm(1,0.5,1), # means A2B1
+                        rnorm(1,0.25,1)  # means A2B2
+          )))
+  sim_df <- data.frame(IVA,IVB,DV)
+
+  aov_results <- summary(aov(DV~IVA*IVB, sim_df))
+  A_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[1]
+  B_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[2]
+  AB_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[3]
+}
+
+length(A_pvalue[A_pvalue<0.05])/1000
+
+length(B_pvalue[B_pvalue<0.05])/1000
+
+length(AB_pvalue[AB_pvalue<0.05])/1000
+
+```
+
+
+
+C.
+
+#### I did this part with before the solution video was posted, and I am not sure if it is correct, but I hope that is what you meant!
+
+```{r}
+library(dplyr)
+
+# N per group
+n <- seq(200,700,50)
+power_AB <- c()
+
+for(j in 1:length(n)){
+
+A_pvalue <- c()
+B_pvalue <- c()
+AB_pvalue <- c()
+  
+  
+for(i in 1:200){
+  IVA <- rep(rep(c("1","2"), each=2), n[j])
+  IVB <- rep(rep(c("1","2"), 2), n[j])
+  DV <- c(replicate(n[j],c(rnorm(1,0,1), # means A1B1
+                        rnorm(1,0,1), # means A1B2
+                        rnorm(1,0.5,1), # means A2B1
+                        rnorm(1,0.25,1)  # means A2B2
+          )))
+  sim_df <- data.frame(IVA,IVB,DV)
+
+  aov_results <- summary(aov(DV~IVA*IVB, sim_df))
+  AB_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[3]
+}
+
+power_AB[j] <- length(AB_pvalue[AB_pvalue<0.05])/200
+}
+
+
+plot_data <- data.frame(n, power_AB)
+
+ggplot(plot_data,aes(x=n,y=power_AB))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept=0.8, color="red")
+
+
+```
+
+
+
+
+
+
+
+
