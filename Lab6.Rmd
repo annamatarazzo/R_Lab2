@@ -9,557 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-library(tibble)
-library(tidyr)
-library(dplyr)
-options(dplyr.summarise.inform = FALSE)
 
-# create the example data
 
-smith_example <- tribble(
-  ~Same, ~Different, ~Imagery, ~Photo, ~Placebo,
-  #--|--|--|--|----
-  25,11,14,25,8,
-  26,21,15,15,20,
-  17,9,29,23,10,
-  15,6,10,21,7,
-  14,7,12,18,15,
-  17,14,22,24,7,
-  14,12,14,14,1,
-  20,4,20,27,17,
-  11,7,22,12,11,
-  21,19,12,11,4
-) %>%
-  pivot_longer(cols = everything(),
-               names_to = "IV",
-               values_to = "DV") %>%
-  mutate(IV = factor(IV,levels = c("Same",
-                                    "Different",
-                                    "Imagery",
-                                    "Photo",
-                                    "Placebo")))
-
-# Note: R automatically orders Factor levels alphabetically
-# we later define contrasts between groups using
-# the the order from the textbook
-# so we need to explicitly declare the order of levels
-
-# run the omnibus test
-aov.out <- aov(DV~IV, smith_example)
-summary(aov.out)
-
-# check the existing contrasts for your factor
-contrasts(smith_example$IV)
-
-c1 <- c(2,-3,2,2,-3)
-c2 <- c(2,0,-1,-1,0)
-c3 <- c(0,0,+1,-1,0)
-c4 <- c(0,+1,0,0,-1)
-
-# combine them into the columns of a matrix
-my_contrasts <- cbind(c1, c2, c3, c4)
-
-# assign them to the contrast property for your IV
-contrasts(smith_example$IV) <- my_contrasts
-
-# rerun ANOVA
-aov.out <- aov(DV~IV, smith_example)
-summary(aov.out)
-
-# use summary.aov and split to print out contrast info
-# define your contrast labels that will get printed to the table
-
-(full_summary <- summary.aov(aov.out,
-                             split=list(IV=list("(1+3+4) vs (2+5)"=1,
-                                                "(1) vs (3+4)" = 2,
-                                                "(3) vs (4)"= 3,
-                                                "(2) vs (5)"= 4)
-                                        )
-                             )
-  )
-
-
-```
-
-```{r example_table, fig.cap="Printing an ANOVA table"}
-library(papaja)
-apa_table(apa_print(full_summary)$table)
-```
-
-
-
-```{r}
-full_summary[[1]]$`F value`[1]
-
-mean(full_summary[[1]]$`F value`[2:5])
-
-```
-
-
-
-
-
-```{r}
-group_means <- c(4,3,10,11)
-(grand_mean <- mean(group_means))
-#> [1] 7
-(differences <- group_means-grand_mean)
-#> [1] -3 -4  3  4
-(squared_differences <- differences^2)
-#> [1]  9 16  9 16
-(sum_squares <- sum(squared_differences))
-#> [1] 50
-```
-
-
-
-```{r}
-fake_data <- tibble(IV = factor(c("A","B","C","D")),
-                    DV = c(4,3,10,11))
-
-contrasts(fake_data$IV)
-#>   B C D
-#> A 0 0 0
-#> B 1 0 0
-#> C 0 1 0
-#> D 0 0 1
-```
-
-
-
-```{r}
-contrasts(fake_data$IV)[,'D']
-#> A B C D 
-#> 0 0 0 1
-
-contrasts(fake_data$IV)[,'D'] * differences
-#> A B C D 
-#> 0 0 0 4
-
-# the formula for D
-grand_mean + (1 * differences[4])
-#> [1] 11
-```
-
-
-
-
-
-```{r}
-contrasts(fake_data$IV)
-#>   B C D
-#> A 0 0 0
-#> B 1 0 0
-#> C 0 1 0
-#> D 0 0 1
-
-contrasts(fake_data$IV) * differences
-#>    B C D
-#> A  0 0 0
-#> B -4 0 0
-#> C  0 3 0
-#> D  0 0 4
-```
-
-
-
-
-
-
-
-```{r}
-grand_mean*contrasts(fake_data$IV) + contrasts(fake_data$IV) * differences
-#>   B  C  D
-#> A 0  0  0
-#> B 3  0  0
-#> C 0 10  0
-#> D 0  0 11
-```
-
-
-
-
-
-
-
-```{r}
-grand_mean
-#> [1] 7
-
-# A has to be four, if the others are 3, 10, and 11)
-mean(c(4, 3, 10, 11))
-#> [1] 7
-```
-
-
-
-
-
-
-
-```{r}
-
-fake_data <- tibble(IV = factor(c("A","B","C","D")),
-                    DV = c(4,3,10,11))
-
-contrasts(fake_data$IV)
-
-
-c1 <- c(-1,-1,1,1)
-c2 <- c(1,-1,0,0)
-c3 <- c(0,0,-1,1)
-
-my_contrasts <- cbind(c1,c2,c3)
-
-contrasts(fake_data$IV) <- my_contrasts
-contrasts(fake_data$IV)
-
-cor(contrasts(fake_data$IV))
-
-```
-
-
-
-
-```{r}
-group_means <- c(4,3,10,11)
-# multiple contrast weights by group means
-contrasts(fake_data$IV) * group_means
-#>   c1 c2  c3
-#> A -4  4   0
-#> B -3 -3   0
-#> C 10  0 -10
-#> D 11  0  11
-
-# Find the sums for each column
-colSums(contrasts(fake_data$IV) * group_means)
-#> c1 c2 c3 
-#> 14  1  1
-
-# Square the sums
-colSums(contrasts(fake_data$IV) * group_means)^2
-#>  c1  c2  c3 
-#> 196   1   1
-
-# divide by the SS for the contrast weights
-(colSums(contrasts(fake_data$IV) * group_means)^2)/ colSums(contrasts(fake_data$IV)^2)
-#>   c1   c2   c3 
-#> 49.0  0.5  0.5
-```
-
-```{r}
-fake_data$DV
-#> [1]  4  3 10 11
-```
-
-
-
-```{r}
-contrasts(fake_data$IV)
-#>   c1 c2 c3
-#> A -1  1  0
-#> B -1 -1  0
-#> C  1  0 -1
-#> D  1  0  1
-```
-
-
-```{r}
-grand_means <- c(7,7,7,7)
-grand_means
-#> [1] 7 7 7 7
-```
-
-
-
-```{r}
-grand_means + contrasts(fake_data$IV)[,1]
-#> A B C D 
-#> 6 6 8 8
-grand_means + contrasts(fake_data$IV)[,1]*2
-#> A B C D 
-#> 5 5 9 9
-grand_means + contrasts(fake_data$IV)[,1]*10
-#>  A  B  C  D 
-#> -3 -3 17 17
-```
-
-
-
-```{r}
-grand_means+
-(contrasts(fake_data$IV)[,1]*3.5)+
-(contrasts(fake_data$IV)[,2]*.5)+
-(contrasts(fake_data$IV)[,3]*.5)
-#>  A  B  C  D 
-#>  4  3 10 11
-```
-
-
-```{r}
-fake_data_2 <- fake_data
-fake_data_2 <- cbind(fake_data,contrasts(fake_data$IV))
-
-lm(DV ~ c1 + c2 + c3, data = fake_data_2 )
-
-summary(lm(DV ~ c1 + c2 + c3, data = fake_data_2 ))
-
-```
-
-
-
-```{r}
-# you should be able to change any of the DV numbers
-# and always find a combination of contrasts
-# that perfectly explains the data
-
-library(tibble)
-
-fake_data <- tibble(IV = factor(c("A","B","C","D")),
-                    DV = c(43,22,53,104))
-
-c1 <- c(-1,-1,1,1)
-c2 <- c(1,-1,0,0)
-c3 <- c(0,0,-1,1)
-my_contrasts <- cbind(c1,c2,c3)
-
-contrasts(fake_data$IV) <- my_contrasts
-
-fake_data_2 <- cbind(fake_data,contrasts(fake_data$IV))
-
-lm(DV ~ c1 + c2 + c3, data = fake_data_2 )
-
-summary(lm(DV ~ c1 + c2 + c3, data = fake_data_2 ))
-
-```
-
-
-
-```{r}
-# example dataframe to simulate null
-sim_data <- tibble(DV = rnorm(6*100,0,1),
-                   IV = factor(rep(1:6, each = 100)))
-
-# example orthogonal linear contrasts
-c1 <- c(1,-1,0,0,0,0)
-c2 <- c(0,0,1,-1,0,0)
-c3 <- c(0,0,0,0,1,-1)
-c4 <- c(-1,-1,2,2,-1,-1)
-c5 <- c(1,1,0,0,-1,-1)
-
-# create contrast matrix
-orth_contrasts <- cbind(c1,c2,c3,c4,c5)
-
-# check contrasts are orthogonal
-cor(orth_contrasts)
-
-# assign new contrasts to IV
-contrasts(sim_data$IV) <- orth_contrasts
-
-# run ANOVA
-summary.aov(aov(DV~IV, sim_data), split=list(IV=list("c1"=1,
-                                                "c2" = 2,
-                                                "c3"= 3,
-                                                "c4"= 4,
-                                                "c5" = 5)
-                                        ))
-
-```
-
-```{r}
-#create a tibble to store all the results
-all_sim_data <- tibble()
-
-# conduct simulation
-for(i in 1:10000){
-
-sim_data <- tibble(DV = rnorm(6*100,0,1),
-                   IV = factor(rep(1:6, each = 100)))
-
-contrasts(sim_data$IV) <- orth_contrasts
-
-sim_output <- summary.aov(aov(DV~IV, sim_data), split=list(IV=list("c1"=1,
-                                                "c2" = 2,
-                                                "c3"= 3,
-                                                "c4"= 4,
-                                                "c5" = 5)
-                                        ))
-
-#save current results in a tibble
-sim_results <- tibble(type = c("omnibus",rep("contrast",5)),
-                      p_values = sim_output[[1]]$`Pr(>F)`[1:6],
-                      sim_num = rep(i,6)
-                      )
-
-# add current results to the tibble storing all the results
-all_sim_data <- rbind(all_sim_data,sim_results)
-}
-```
-
-
-```{r}
-# analyze the sim data
-type_I_errors <- all_sim_data %>%
-  mutate(type_I = p_values < .05) %>%
-  group_by(type, sim_num) %>%
-  summarize(counts = sum(type_I)) %>%
-  group_by(type,counts) %>%
-  summarize(type_I_frequency = sum(counts))
-
-knitr::kable(type_I_errors)
-```
-
-```{r}
-type_I_errors %>%
-  filter(type == 'omnibus',
-         counts == 1) %>%
-  pull(type_I_frequency)/10000
-#> [1] 0.0501
-```
-
-
-
-
-
-```{r}
-type_I_errors %>%
-  filter(type == 'contrast',
-         counts > 0) %>%
-  pull(type_I_frequency) %>%
-  sum()/50000
-
-```
-
-```{r}
-type_I_errors %>%
-  filter(type == 'contrast',
-         counts > 0) %>%
-  pull(type_I_frequency) %>%
-  sum()/10000
-
-```
-
-
-
-
-
-
-```{r}
-romeo_juliet <- tibble(subjects = 1:20,
-                       Group = rep(c("Context Before",
-                                 "Partial Context",
-                                 "Context After",
-                                 "Without context"), each = 5),
-                       Comprehension = c(5,9,8,4,9,
-                                         5,4,3,5,4,
-                                         2,4,5,4,1,
-                                         3,3,2,4,3
-                                   )
-                          )
-
-romeo_juliet$Group <- factor(romeo_juliet$Group,
-                             levels = c("Context Before",
-                                 "Partial Context",
-                                 "Context After",
-                                 "Without context")
-                             )
-
-# define non-orthogonal contrasts
-
-c1 <- c(1,1,1,-3)
-c2 <- c(0,0,1,-1)
-c3 <- c(3,-1,-1,-1)
-c4 <- c(1,-1,0,0)
-
-new_contrasts <- cbind(c1,c2,c3,c4)
-cor(new_contrasts)
-
-contrasts(romeo_juliet$Group) <- new_contrasts
-
-# note, by default, correctly computes the first contrast, but not the rest...
-
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c1"=1, "c2" = 2, "c3"= 3, "c4" = 4)))
-
-contrasts(romeo_juliet$Group) <- c1
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c1"=1)))
-
-contrasts(romeo_juliet$Group) <- c2
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c2"=1)))
-
-contrasts(romeo_juliet$Group) <- c3
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c3"=1)))
-
-contrasts(romeo_juliet$Group) <- c4
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c4"=1)))
-
-```
-
-```{r}
-romeo_juliet <- tibble(subjects = 1:20,
-                       Group = rep(c("Context Before",
-                                 "Partial Context",
-                                 "Context After",
-                                 "Without context"), each = 5),
-                       Comprehension = c(5,9,8,4,9,
-                                         5,4,3,5,4,
-                                         2,4,5,4,1,
-                                         3,3,2,4,3
-                                   )
-                          )
-
-romeo_juliet$Group <- factor(romeo_juliet$Group,
-                             levels = c("Context Before",
-                                 "Partial Context",
-                                 "Context After",
-                                 "Without context")
-                             )
-
-# traditional approach
-
-# define contrasts
-
-c1 <- c(3,-1,-1,-1)
-c2 <- c(1,1,-1,-1)
-c3 <- c(1,-1,1,-1)
-
-new_contrasts <- cbind(c1,c2,c3)
-cor(new_contrasts)
-
-# run individual ANOVAs for each contrast
-
-contrasts(romeo_juliet$Group) <- c1
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("contrast"=1)))
-
-
-contrasts(romeo_juliet$Group) <- c2
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("contrast"=1)))
-
-
-contrasts(romeo_juliet$Group) <- c3
-summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("contrast"=1)))
-
-
-# the modern approach
-
-# add contrasts as factors in a multiple linear regression
-
-romeo_juliet <- romeo_juliet %>%
-  mutate(c1 = rep(c(3,-1,-1,-1),each=5),
-         c2 = rep(c(1,1,-1,-1),each=5),
-         c3 = rep(c(1,-1,1,-1),each=5)
-         )
-
-# conduct the multiple linear regression
-summary(lm(Comprehension ~ c1 + c2 + c3 , romeo_juliet))
-
-
-library(ppcor)
-spcor(romeo_juliet[,3:6])$estimate^2
-
-```
-
-
+` Note - I just followed the solution video for this lab, because I am getting anxious about the backlog of homeworks)) I made sure to understand everything though. `
 
 
 ## Problems
@@ -570,108 +22,132 @@ spcor(romeo_juliet[,3:6])$estimate^2
 
 a. Make use of the rbinom() function to show you can reproduce both probabilities. (1 point)
 
+```{r}
+A <- replicate(10000, sum(rbinom(20,1, .05)))
+hist(A)
+
+length(A[A>0])/10000
+
+B <- replicate(10000, sum(rbinom(50,1, .05)))
+hist(B)
+
+length(B[B>0])/10000
+
+```
+
 b. If the ineffectual experiment was conducted 20 times, and there were four groups, and the experimenter would accept a significant result from any of the orthogonal linear contrasts, what would be the probability of finding a significant result here? (1 point)
 
-
-
-
-
-
 ```{r}
 
-```
+D <- replicate(10000, sum(rbinom(20,3,.05)))
 
-```{r}
+
+length(D[D>0])/10000
 
 ```
 
 
+### Problem 2
 
-
-
-
-```{r}
-
-```
+2. Consider that a researcher publishes a study showing a significant effect, p <. 05; but, in reality the researcher makes a type I error, and the manipulation did not cause any difference. If many other researchers replicated the study, what kind of p-values would they find? Use R to create a sampling distribution of p-values that would be expected in this situation. What shape does this distribution have? (2 points)
 
 ```{r}
 
-```
+library(tibble)
+
+#my_pvalues <- c()
+#for(i in 1:10000){
+#IV <- rep(1:2, each=20)
+#DV <- c(rnorm(20,0,1), rnorm(20,0,1))
+
+#sim_data <- tibble(IV, DV)
+
+#my_pvalues[i] <- t.test(DV~IV, var.equal=TRUE, data=sim_data)$p.value
+#}
 
 
+my_pvalues <- replicate(10000, t.test(rnorm(20,0,1), rnorm(20,0,1), var.equal = TRUE)$p.value)
 
 
-
-
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-
-
-
-
-
-```{r}
-
-```
-
-```{r}
+hist(my_pvalues)
 
 ```
 
 
+### Problem 3
 
-
-
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-
-
-
+3. Now assume that the published result reflects a true effect. Specifically, let’s imagine the study had two groups (between-subjects), with 20 subjects in each group. Assume that scores for subjects are all sampled from a normal distribution, and that group A has larger mean than group B by .5 standard deviations (e.g., Cohen’s d = .5). If many other researchers replicated the study, what kind of p-values would they find? Use R to create a sampling distribution of p-values that would be expected in this situation. What shape does this distribution have? (2 points)
 
 
 ```{r}
+my_pvalues <- replicate(10000, t.test(rnorm(20,0.5,1), rnorm(20,0,1), var.equal = TRUE)$p.value)
 
-```
-
-```{r}
-
+hist(my_pvalues)
 ```
 
 
 
+### Bonus Questions
+
+### Problem 4
+
+4. Same as #3, except that we now assume the design has four groups (between-subjects). Assume that group A has a mean that is .5 standard deviations larger than groups B, C, and D. Use R to create a sampling distribution of p-values that would be expected for the linear contrast evaluating the research hypothesis that A > B = C = D. (1 point)
 
 
 ```{r}
+my_pvalues <- c()
+for(i in 1:1000){
+  
+IV <- factor(rep(1:4, each=20))
+DV <- c(rnorm(20,0.5,1), rnorm(20,0,1), rnorm(20,0,1),rnorm(20,0,1))
 
+sim_data <- tibble(IV, DV)
+
+c1 <- c(3,-1, -1, -1)
+
+contrasts(sim_data$IV) <- c1
+
+aov.out <- aov(DV~IV, sim_data)
+
+save_results <- summary.aov(aov.out, split = list(IV=list("c1" = 1)))
+
+my_pvalues[i] <- save_results[[1]]$`Pr(>F)`[2]
+}
+
+hist(my_pvalues)
 ```
+
+### Problem 5
+
+5. Consider a one-factor between subjects ANOVA with four groups. Run two simulations of the null-hypothesis, one for the omnibus test, and one for the specific linear contrast mentioned above A > B = C = D. Is the probability of rejecting a type I error (for rejecting the null with alpha < .05) the same for the omnibus test versus a specific contrast? (1 point)
 
 ```{r}
 
+omnibus_pvalues <- c()
+contrust_pvalues <- c()
+
+for(i in 1:1000){
+  
+IV <- factor(rep(1:4, each=20))
+DV <- c(rnorm(20,0,1), rnorm(20,0,1), rnorm(20,0,1),rnorm(20,0,1))
+
+sim_data <- tibble(IV, DV)
+
+c1 <- c(3,-1, -1, -1)
+
+contrasts(sim_data$IV) <- c1
+
+aov.out <- aov(DV~IV, sim_data)
+
+save_results <- summary.aov(aov.out, split = list(IV=list("c1" = 1)))
+
+omnibus_pvalues[i] <- save_results[[1]]$`Pr(>F)`[1]
+contrust_pvalues[i] <- save_results[[1]]$`Pr(>F)`[2]
+}
+
+#hist(my_pvalues)
+
+length(omnibus_pvalues[omnibus_pvalues < 0.5])/1000
+length(contrust_pvalues[contrust_pvalues < 0.5])/1000
 ```
 
-
-
-
-
-
-```{r}
-
-```
-
-```{r}
-
-```
