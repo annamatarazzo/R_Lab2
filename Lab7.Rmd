@@ -1,0 +1,110 @@
+---
+title: "Lab7"
+author: "Anna Matarazzo"
+date: "5/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problems
+
+
+Ch 10, 9 stats book
+
+
+### Problem 1
+
+Explain the concept of main effects and interactions with an example using R. For example, this could include a definition of main effects and interactions and a figure depicting main effects and an interaction along with an explanation of the patterns for each. A major point of this problem is for you to to engage in the task of developing an explanation of these concepts that would 1) be helpful for you to understand the concepts, and 2) could be helpful for others to understand these concepts. (3 points)
+
+```{r}
+
+```
+
+
+### Problem 2
+
+Complete the 2x2 factorial lab found here https://crumplab.github.io/statisticsLab/lab-10-factorial-anova.html, up to section 10.4.8. More specifically, your task is to follow that lab exercise to load in the data, transform the data into long-format, conduct a 2x2 between subjects ANOVA, and write a short results section reporting the main effects and interaction. (3 points)
+
+```{r}
+library(data.table)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+
+all_data <- fread("data/stroop_stand.csv")
+
+
+RTs <- c(as.numeric(unlist(all_data[,1])),
+         as.numeric(unlist(all_data[,2])),
+         as.numeric(unlist(all_data[,3])),
+         as.numeric(unlist(all_data[,4]))
+         )
+
+Congruency <- rep(rep(c("Congruent","Incongruent"),each=50),2)
+Posture <- rep(c("Stand","Sit"),each=100)
+Subject <- rep(1:50,4)
+
+stroop_df <- data.frame(Subject,Congruency,Posture,RTs)
+
+stroop_long<- gather(all_data, key=Condition, value=RTs, 
+                     congruent_stand, incongruent_stand,
+                     congruent_sit, incongruent_sit)
+
+new_columns <- tstrsplit(stroop_long$Condition, "_", names=c("Congruency","Posture"))
+stroop_long <- cbind(stroop_long,new_columns)
+stroop_long <- cbind(stroop_long,Subject=rep(1:50,4))
+
+plot_means <- stroop_long %>%
+            group_by(Congruency,Posture) %>%
+            summarise(mean_RT = mean(RTs),
+                      SEM = sd(RTs)/sqrt(length(RTs)))
+
+ggplot(plot_means, aes(x=Posture, y=mean_RT, group=Congruency, fill=Congruency))+
+  geom_bar(stat="identity", position="dodge")+
+  geom_errorbar(aes(ymin=mean_RT-SEM, ymax=mean_RT+SEM), 
+                position=position_dodge(width=0.9),
+                width=.2)+
+  theme_classic()+
+  coord_cartesian(ylim=c(700,1000))
+
+```
+
+```{r}
+aov_out<-aov(RTs ~ Congruency*Posture, stroop_long)
+summary_out<-summary(aov_out)
+summary_out
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
