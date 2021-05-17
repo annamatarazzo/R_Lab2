@@ -19,7 +19,133 @@ Ch 10, 9 stats book
 
 1. Explain the concept of main effects and interactions with an example using R. For example, this could include a definition of main effects and interactions and a figure depicting main effects and an interaction along with an explanation of the patterns for each. A major point of this problem is for you to to engage in the task of developing an explanation of these concepts that would 1) be helpful for you to understand the concepts, and 2) could be helpful for others to understand these concepts. (3 points)
 
+
+When we plan an experiment with 2 independent variable (IV), we expect that our dependent variable (DV)o will be affected by either one, both or none of the independent variables.
+
+Let's consider the example when none of the IVs had an effect on the DV.
+
+
 ```{r}
+
+library(tibble)
+library(ggplot2)
+
+Interaction <- tribble(~Treat, ~Temerature, ~Mean_Likeness_Score,
+        "Ice-Cream", "Hot", 1,
+        "Ice-Cream", "Cold", 10,
+        "Pancakes", "Hot", 10,
+        "Pancakes", "Cold", 1,
+        )
+
+ggplot(Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temerature, color=Temerature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+Main_effect_B <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
+        "Ice-Cream", "Strawberry", 10,
+        "Ice-Cream", "Beef", 1,
+        "Milkshake", "Strawberry", 10,
+        "Milkshake", "Beef", 1,
+        )
+
+ggplot(Main_effect_B, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+No_Main_Effects <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
+        "Ice-Cream", "Strawberry", 10,
+        "Ice-Cream", "Vanilla", 10,
+        "Milkshake", "Strawberry", 10,
+        "Milkshake", "Vanilla", 10,
+        )
+
+ggplot(No_Main_Effects, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+Main_effect_A <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
+        "Ice-Cream", "Strawberry", 10,
+        "Ice-Cream", "Vanilla", 10,
+        "Ramen", "Strawberry", 1,
+        "Ramen", "Vanilla", 1,
+        )
+
+ggplot(Main_effect_A, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+
+
+
+Main_effect_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
+        "Ice-Cream", "Cold", 10,
+        "Ice-Cream", "Hot", 0,
+        "Coffee", "Cold", 7,
+        "Coffee", "Hot", 3,
+        )
+
+ggplot(Main_effect_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+Main_effect_A_and_Interaction <- tribble(~Temperature, ~Treat, ~Mean_Likeness_Score,
+        "Hot", "Coffee", 8,
+        "Hot", "Tea", 9,
+        "Cold", "Coffee", 4,
+        "Cold", "Tea", 3,
+        )
+
+ggplot(Main_effect_A_and_Interaction, aes(x=Temperature, y=Mean_Likeness_Score, group=Treat, color=Treat))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+
+
+Main_effect_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
+        "Ice-Cream", "Cold", 10,
+        "Ice-Cream", "Hot", 0,
+        "Coffee", "Cold", 7,
+        "Coffee", "Hot", 3,
+        )
+
+ggplot(Main_effect_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+
+Main_effect_A_and_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
+        "Coffee", "Cold", 8,
+        "Coffee", "Hot", 10,
+        "Tea", "Cold", 5,
+        "Tea", "Hot", 9,
+        )
+
+ggplot(Main_effect_A_and_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+Main_effect_A_and_B <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
+        "Ice-Cream", "Strawberry", 6,
+        "Ice-Cream", "Vanilla", 10,
+        "Milkshake", "Strawberry", 5,
+        "Milkshake", "Vanilla", 9,
+        )
+
+ggplot(Main_effect_A_and_B, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+
+
 
 ```
 
