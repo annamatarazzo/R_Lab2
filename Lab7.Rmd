@@ -12,53 +12,33 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Problems
 
 
-Ch 10, 9 stats book
-
-
 ### Problem 1
 
 1. Explain the concept of main effects and interactions with an example using R. For example, this could include a definition of main effects and interactions and a figure depicting main effects and an interaction along with an explanation of the patterns for each. A major point of this problem is for you to to engage in the task of developing an explanation of these concepts that would 1) be helpful for you to understand the concepts, and 2) could be helpful for others to understand these concepts. (3 points)
 
 
-When we plan an experiment with 2 independent variable (IV), we expect that our dependent variable (DV)o will be affected by either one, both or none of the independent variables.
+## My Version
 
-Let's consider the example when none of the IVs had an effect on the DV.
+When we plan an experiment with two independent variables (IV), we expect that our dependent variable (DV) will be affected by either one, both, or none of the independent variables.
 
+Let's consider some examples.
+
+1. On a nice summer day, you decided to give away cold sweet treats to random people and measure how much people like the treats on a scale from 1 to 10 (DV).
+You offer people Ice-cream and Milkshake (IV-1) of two flavors - vanilla and strawberry (IV-2).
+The day was hot, and the people were grateful for the free treats, so the mean Likeness Score for all the goodies turned out to be 9.5 out of 10.
+
+In this example of an experiment, neither of the IVs nor their interaction affected a DV.
 
 ```{r}
 
 library(tibble)
 library(ggplot2)
 
-Interaction <- tribble(~Treat, ~Temerature, ~Mean_Likeness_Score,
-        "Ice-Cream", "Hot", 1,
-        "Ice-Cream", "Cold", 10,
-        "Pancakes", "Hot", 10,
-        "Pancakes", "Cold", 1,
-        )
-
-ggplot(Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temerature, color=Temerature))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
-
-Main_effect_B <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
-        "Ice-Cream", "Strawberry", 10,
-        "Ice-Cream", "Beef", 1,
-        "Milkshake", "Strawberry", 10,
-        "Milkshake", "Beef", 1,
-        )
-
-ggplot(Main_effect_B, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
-
 No_Main_Effects <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
-        "Ice-Cream", "Strawberry", 10,
-        "Ice-Cream", "Vanilla", 10,
-        "Milkshake", "Strawberry", 10,
-        "Milkshake", "Vanilla", 10,
+        "Ice-Cream", "Strawberry", 9.5,
+        "Ice-Cream", "Vanilla", 9.5,
+        "Milkshake", "Strawberry", 9.5,
+        "Milkshake", "Vanilla", 9.5,
         )
 
 ggplot(No_Main_Effects, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
@@ -66,71 +46,15 @@ ggplot(No_Main_Effects, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=
   geom_line()+
   theme_classic()
 
-Main_effect_A <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
-        "Ice-Cream", "Strawberry", 10,
-        "Ice-Cream", "Vanilla", 10,
-        "Ramen", "Strawberry", 1,
-        "Ramen", "Vanilla", 1,
-        )
-
-ggplot(Main_effect_A, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
+```
 
 
+2. You decided to replicate your experiment on another day. However, something happened to the strawberry flavor (may have it gone bad?!), and unfortunately, the milkshakes turned out to be a bit too watery.
+You see in your results that people liked ice cream more than milkshakes (IV-1) and leaned towards vanilla flavor rather than the strawberry one (IV-2).
 
+In this example, both independent variables affected a DV. There was no interaction effect.
 
-Main_effect_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
-        "Ice-Cream", "Cold", 10,
-        "Ice-Cream", "Hot", 0,
-        "Coffee", "Cold", 7,
-        "Coffee", "Hot", 3,
-        )
-
-ggplot(Main_effect_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
-
-Main_effect_A_and_Interaction <- tribble(~Temperature, ~Treat, ~Mean_Likeness_Score,
-        "Hot", "Coffee", 8,
-        "Hot", "Tea", 9,
-        "Cold", "Coffee", 4,
-        "Cold", "Tea", 3,
-        )
-
-ggplot(Main_effect_A_and_Interaction, aes(x=Temperature, y=Mean_Likeness_Score, group=Treat, color=Treat))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
-
-
-
-Main_effect_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
-        "Ice-Cream", "Cold", 10,
-        "Ice-Cream", "Hot", 0,
-        "Coffee", "Cold", 7,
-        "Coffee", "Hot", 3,
-        )
-
-ggplot(Main_effect_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
-
-
-Main_effect_A_and_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
-        "Coffee", "Cold", 8,
-        "Coffee", "Hot", 10,
-        "Tea", "Cold", 5,
-        "Tea", "Hot", 9,
-        )
-
-ggplot(Main_effect_A_and_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
-  geom_point()+
-  geom_line()+
-  theme_classic()
+```{r}
 
 Main_effect_A_and_B <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
         "Ice-Cream", "Strawberry", 6,
@@ -145,9 +69,128 @@ ggplot(Main_effect_A_and_B, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, co
   theme_classic()
 
 
+```
 
+
+3. Now, say you decided to establish whether people like pancakes more than an ice cream (IV-1). You also want to see if the temperature of the treat (IV-2) has something to do with how much people like it (DV).
+It turned out that, on average, people like ice cream as much as they like pancakes. Unsurprisingly, they prefer COLD ice cream, but they would rather have their pancakes HOT.
+
+In this example, we see an interaction effect. There are no main effects of Treat or Temperature variables.  
+
+```{r}
+
+Interaction <- tribble(~Treat, ~Temerature, ~Mean_Likeness_Score,
+        "Ice-Cream", "Hot", 1,
+        "Ice-Cream", "Cold", 10,
+        "Pancakes", "Hot", 10,
+        "Pancakes", "Cold", 1,
+        )
+
+ggplot(Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temerature, color=Temerature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
 
 ```
+
+4. Say you decided to change the first experiment a little bit. You want to see if a more distinct flavor (IV-2) will affect your DV. Instead of vanilla, you offer a beef flavor! 
+It turned out, people still like ice cream as much as they like milkshakes (IV-1), but they would rather have both of these treats taste like strawberries (no offense to your beef flavor idea!).
+
+In this example, we have the main effect of one independent variable (IV-2, Flavor).
+
+
+```{r}
+Main_effect_B <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
+        "Ice-Cream", "Strawberry", 10,
+        "Ice-Cream", "Beef", 1,
+        "Milkshake", "Strawberry", 10,
+        "Milkshake", "Beef", 1,
+        )
+
+ggplot(Main_effect_B, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+```
+
+5. Similar thing is most likely to happen if you manipulate your treat variable (IV-1) and offer Ramen instead of milkshakes, but keep the flavors from the first experiment (strawberry and vanilla, IV-2).
+My guess is that people would still like ice cream of both flavors, but vanilla or strawberry Ramen most likely won't be a hit.
+
+This would be an example of the main effect of another independent variable (IV-1, Treat).
+
+```{r}
+Main_effect_A <- tribble(~Treat, ~Flavor, ~Mean_Likeness_Score,
+        "Ice-Cream", "Strawberry", 10,
+        "Ice-Cream", "Vanilla", 10,
+        "Ramen", "Strawberry", 1,
+        "Ramen", "Vanilla", 1,
+        )
+
+ggplot(Main_effect_A, aes(x=Treat, y=Mean_Likeness_Score, group=Flavor, color=Flavor))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+```
+
+
+6. Being a very curious experimenter, you decided to change a Treat variable (IV-1) in the experiment with temperature. So you offer people hot and cold (IV-2) coffee and milkshakes.
+Results showed that, on average, people like coffee as much as they like milkshakes. The day was hot, so most people preferred cold coffee, but some still did choose a hot coffee. However, people exhibited a firm preference for cold milkshakes rather than hot milkshakes.
+
+In this example, we see an interaction effect and the main effect of Temperature (IV-2).
+
+```{r}
+Main_effect_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
+        "Milkshake", "Cold", 10,
+        "Milkshake", "Hot", 0,
+        "Coffee", "Cold", 7,
+        "Coffee", "Hot", 3,
+        )
+
+ggplot(Main_effect_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+```
+
+7. You then perform a similar experiment on a cold winter day in Vermont. You want to see if the drink temperature (IV-1) will affect how much people like the treat you offer. This time instead of milkshakes, you offer tea (IV-2).
+It turned out that, on average, people preferred hot drinks to cold drinks. Interestingly, hot tea was rated higher than hot coffee. Cold tea, however, was preferred less than cold coffee.
+
+In this example, we see the main effect of IV-1(Temperature) and the interaction effect.
+
+```{r}
+Main_effect_A_and_Interaction <- tribble(~Temperature, ~Treat, ~Mean_Likeness_Score,
+        "Hot", "Coffee", 8,
+        "Hot", "Tea", 9,
+        "Cold", "Coffee", 4,
+        "Cold", "Tea", 3,
+        )
+
+ggplot(Main_effect_A_and_Interaction, aes(x=Temperature, y=Mean_Likeness_Score, group=Treat, color=Treat))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+```
+
+8. Finally, your friend in New York decides to replicate the previous experiment. His results showed that people still preferred hot drinks to cold drinks. However, hot coffee was rated higher than hot tea, AND cold coffee was rated higher than cold tea (I guess New-Yorkers are coffee drinkers after all!).
+
+Here we have two main effects (IV-1, Treat, and IV-2, Temperature) and the interaction effect.
+
+```{r}
+
+Main_effect_A_and_B_and_Interaction <- tribble(~Treat, ~Temperature, ~Mean_Likeness_Score,
+        "Coffee", "Cold", 8,
+        "Coffee", "Hot", 10,
+        "Tea", "Cold", 5,
+        "Tea", "Hot", 9,
+        )
+
+ggplot(Main_effect_A_and_B_and_Interaction, aes(x=Treat, y=Mean_Likeness_Score, group=Temperature, color=Temperature))+
+  geom_point()+
+  geom_line()+
+  theme_classic()
+
+```
+
 
 
 ### Problem 2
