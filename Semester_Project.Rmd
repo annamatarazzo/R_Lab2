@@ -1,0 +1,167 @@
+---
+title: "Final_Project"
+author: "Anna Matarazzo"
+date: "5/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+
+## Import data
+Input_data <- fread("data/Input_data.csv")
+
+## select columns we need (easier on the eyes)
+
+cue <- c("A+", "B-", "Y-/Y+", "X+/X-")
+
+filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==1 & Group==1 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
+
+means <- filtered_data  %>%
+  group_by(`2_se Blocks`, EpochRole)%>%
+  summarise(means = mean(NumberOfEntries),
+            stdev = sd(NumberOfEntries),
+            SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
+
+ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point()+
+  geom_line()+
+  geom_errorbar(aes(ymin = means - SEM,
+                    ymax = means + SEM),
+                width = 0.25)
+
+```
+
+
+
+
+
+```{r}
+
+cue <- c("A+", "B-", "Y-/Y+", "X+/X-")
+
+filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==1 & Group==2 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
+
+means <- filtered_data  %>%
+  group_by(`2_se Blocks`, EpochRole)%>%
+  summarise(means = mean(NumberOfEntries),
+            SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
+
+ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point()+
+  geom_line()+
+  geom_errorbar(aes(ymin = means - SEM,
+                    ymax = means + SEM),
+                width = 0.25)
+
+```
+
+
+
+
+```{r}
+cue <- c("A+", "B-", "Y+", "X-", "AX+", "BY-")
+
+filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==2 & Group==1 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
+
+means <- filtered_data  %>%
+  group_by(`2_se Blocks`, EpochRole)%>%
+  summarise(means = mean(NumberOfEntries),
+            SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
+
+ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point()+
+  geom_line()+
+  geom_errorbar(aes(ymin = means - SEM,
+                    ymax = means + SEM),
+                width = 0.25)
+```
+
+
+
+
+```{r}
+cue <- c("A+", "B-", "Y+", "X-", "AX+", "BY-")
+
+filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==2 & Group==2 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
+
+means <- filtered_data  %>%
+  group_by(`2_se Blocks`, EpochRole)%>%
+  summarise(means = mean(NumberOfEntries),
+            SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
+
+ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point()+
+  geom_line()+
+  geom_errorbar(aes(ymin = means - SEM,
+                    ymax = means + SEM),
+                width = 0.25)
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
