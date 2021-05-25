@@ -14,12 +14,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(data.table)
 library(ggplot2)
+library(grid)
 
 ## Import data
 Input_data <- fread("data/Input_data.csv")
 
-## select columns we need (easier on the eyes)
-
+## select columns we need
 cue <- c("A+", "B-", "Y-/Y+", "X+/X-")
 
 filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==1 & Group==1 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
@@ -38,6 +38,48 @@ ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
                 width = 0.25)
 
 ```
+
+
+
+```{r}
+
+cue <- c("A+", "B-", "Y-/Y+", "X+/X-")
+
+filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==1 & Group==1 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
+
+means <- filtered_data  %>%
+  group_by(`2_se Blocks`, EpochRole)%>%
+  summarise(means = mean(NumberOfEntries),
+            stdev = sd(NumberOfEntries),
+            SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
+
+AA <- ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point(aes(shape=EpochRole,color=EpochRole, size=2))+
+  geom_line()+
+  geom_errorbar(aes(ymin = means - SEM, ymax = means + SEM), width = 0.05)+
+  theme_classic()+
+  ylim(0, 5)+
+  xlim(0.8, 5)+
+  scale_shape_manual(values=c(24, 21, 17, 16))+
+  scale_fill_manual(values = c('white','white','blue','red')) + 
+  scale_color_manual(values = c('black','black','blue','red')) +
+   ylab("Mean Magazine Entries")+
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank())+
+
+  theme(legend.position = "none") +   # Remove legend
+  theme(axis.text.y=element_text(size=10),
+        axis.title=element_text(size=10),
+        axis.ticks.length.x = unit(-.15, "cm"),
+        axis.text.x = element_text(margin = margin(t = 0.4, unit = "cm"), size=10))+
+  
+  theme(legend.title = element_blank())+
+  scale_size(guide=FALSE)   # Remove legend for size
+  
+AA
+
+```
+
 
 
 
@@ -54,12 +96,26 @@ means <- filtered_data  %>%
   summarise(means = mean(NumberOfEntries),
             SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
 
-ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
-  geom_point()+
+BB <- ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point(aes(shape=EpochRole,color=EpochRole, size=2))+
   geom_line()+
-  geom_errorbar(aes(ymin = means - SEM,
-                    ymax = means + SEM),
-                width = 0.25)
+  geom_errorbar(aes(ymin = means - SEM, ymax = means + SEM), width = 0.05)+
+  theme_classic()+
+  ylim(0, 5)+
+  xlim(0.8, 5)+
+  scale_shape_manual(values=c(24, 21, 17, 16))+
+  scale_fill_manual(values = c('white','white','blue','red')) + 
+  scale_color_manual(values = c('black','black','blue','red')) +
+  xlab("Two-Session Blocks") + ylab("Mean Magazine Entries")+
+   theme(legend.position = "none") +   # Remove legend
+  theme(axis.text.y=element_text(size=10),
+        axis.title=element_text(size=10),
+        axis.ticks.length.x = unit(-.15, "cm"),
+        axis.text.x = element_text(margin = margin(t = 0.4, unit = "cm"), size=10),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10))
+
+BB
 
 ```
 
@@ -76,12 +132,34 @@ means <- filtered_data  %>%
   summarise(means = mean(NumberOfEntries),
             SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
 
-ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
-  geom_point()+
+CC <- ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point(aes(shape=EpochRole,color=EpochRole, size=2))+
   geom_line()+
-  geom_errorbar(aes(ymin = means - SEM,
-                    ymax = means + SEM),
-                width = 0.25)
+  geom_errorbar(aes(ymin = means - SEM, ymax = means + SEM), width = 0.05)+
+  theme_classic()+
+  ylim(0, 5)+
+  scale_shape_manual(values=c(24, 17, 21, 16, 17, 16))+    #24, 21
+  scale_fill_manual(values = c('white','black','black','black','blue','red')) + 
+  scale_color_manual(values = c('black','black','black','black','blue','red')) +
+  ylab("Mean Magazine Entries")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank())+
+  scale_x_continuous(breaks=seq(0,10,1))+
+
+       
+  theme(axis.text.y=element_blank(),
+        axis.line.y=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title=element_text(size=10),
+        axis.ticks.length.x = unit(-.15, "cm"),
+        axis.text.x = element_text(margin = margin(t = 0.4, unit = "cm"), size=10),
+        legend.text=element_text(size=10),
+        legend.title = element_blank(),
+        legend.position = "none")   # Remove legend
+  
+CC
+
 ```
 
 
@@ -97,53 +175,29 @@ means <- filtered_data  %>%
   summarise(means = mean(NumberOfEntries),
             SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
 
-ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
-  geom_point()+
+DD <- ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
+  geom_point(aes(shape=EpochRole,color=EpochRole, size=2))+
   geom_line()+
-  geom_errorbar(aes(ymin = means - SEM,
-                    ymax = means + SEM),
-                width = 0.25)
-```
-
-
-
-
-```{r}
-
-library(dplyr)
-library(grid)
-
-
-cue <- c("A+", "B-", "Y-/Y+", "X+/X-")
-
-filtered_data <- Input_data %>% filter(SplitNo==2 & Stage==1 & Group==1 & EpochRole%in%cue) %>% select(Group,Rat,Stage,EpochRole,SplitNo,NumberOfEntries,`2_se Blocks`)
-
-means <- filtered_data  %>%
-  group_by(`2_se Blocks`, EpochRole)%>%
-  summarise(means = mean(NumberOfEntries),
-            stdev = sd(NumberOfEntries),
-            SEM = sd(NumberOfEntries)/sqrt(length(NumberOfEntries)))
-
-ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRole))+
-  geom_point(aes(shape=EpochRole,color=EpochRole, size=2,stroke = 1))+
-  geom_line()+
-  geom_errorbar(aes(ymin = means - SEM,
-                    ymax = means + SEM),
-                width = 0.1)+
-   theme(panel.grid = element_blank())+
+  geom_errorbar(aes(ymin = means - SEM, ymax = means + SEM), width = 0.05)+
+  theme_classic()+
   ylim(0, 5)+
-  scale_color_manual(values=c('black','black','blue','red'))+
-  scale_fill_manual(values = c('white','white','blue','red'))+
-  scale_shape_manual(values=c(1, 2, 17, 16))
-
-grid.force()  # To make the grobs visible to grid editing tools
-
-grid.edit("geom_point.points", grep = TRUE, gp = gpar(lwd = 1.5))
-
+  scale_shape_manual(values=c(24, 17, 21, 16, 17, 16))+    #24, 21
+  scale_fill_manual(values = c('white','black','black','black','blue','red')) + 
+  scale_color_manual(values = c('black','black','black','black','blue','red')) +
+  xlab("Two-Session Blocks") + 
+  scale_x_continuous(breaks=seq(0,10,1))+
+  theme(legend.position = "none") +   # Remove legend
+  theme(axis.text.y=element_blank(),
+        axis.line.y=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title.x=element_text(size=10),
+        axis.ticks.length.x = unit(-.15, "cm"),
+        axis.text.x = element_text(margin = margin(t = 0.4, unit = "cm"), size=10)) 
+  
+DD
 
 ```
-
-
 
 
 
@@ -151,48 +205,22 @@ grid.edit("geom_point.points", grep = TRUE, gp = gpar(lwd = 1.5))
 
 ```{r}
 
-```
+library("cowplot")
+plot_grid(AA, CC, BB, DD,
+          labels = c("Master", NA, "Yoked", NA),
+          label_size = 12,
+          hjust=-1.1,
+          ncol = 2, nrow = 2,
+          rel_widths = c(1, 2,1,2)) #adjust the width of graphs
 
+setEPS()
+postscript("whatever.eps")
+plot(rnorm(100), main="Hey Some Data")
+dev.off()
 
-
-
-
-
-
-```{r}
-
-```
-
-
-
-
-
-
-```{r}
+ggsave(file="name.eps")
 
 ```
-
-
-
-
-
-
-
-```{r}
-
-```
-
-
-
-
-
-
-
-
-```{r}
-
-```
-
 
 
 
