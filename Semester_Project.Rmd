@@ -284,10 +284,11 @@ DD <- ggplot(means, aes(x=`2_se Blocks`, y=means, group=EpochRole, color=EpochRo
   xlab("Two-Session Blocks") + 
   scale_x_continuous(breaks=seq(0,10,1))+
   theme(legend.position = "none") +   # Remove legend
-  theme(axis.text.y=element_blank(),
-        axis.line.y=element_blank(),
+  theme(axis.text.y=element_blank(),  # Remove all elements of y-axis
+        axis.line.y=element_blank(), 
         axis.title.y=element_blank(),
         axis.ticks.y=element_blank(),
+        
         axis.title.x=element_text(size=10),
         axis.ticks.length.x = unit(-.15, "cm"),
         axis.text.x = element_text(margin = margin(t = 0.4, unit = "cm"), size=10)) 
@@ -332,7 +333,8 @@ I left out a few things to work on for the practical section:
 
 1. Add "A" and "B" titles to the plot to make it look exactly like the original. (3 points)
 2. Make the ticks on the y-axis face inward. (3 points)
-3. Create a legend that looks like the one on the original plot. (A hundred thousand bijillion points, because it's real hard)
+3. Figure out why the error bars are smaller than the error bars on the original plot. (100 points)
+4. Create a legend that looks like the one on the original plot. (A hundred thousand bijillion points, because it's real hard)
 
 
 
