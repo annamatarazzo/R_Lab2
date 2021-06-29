@@ -1,0 +1,49 @@
+---
+title: "SR_LI"
+author: "Anna Matarazzo"
+date: "6/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+```{r}
+
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(grid)
+
+## Import data
+Input_data <- fread("data/data_sr_li.csv", header = TRUE)
+
+```
+
+
+```{r}
+
+LI_Score <- Input_data$`LI Score` 
+
+SR_Score <- Input_data$`SR_Slope_ 11se_Norm`
+
+cor.test(SR_Score, LI_Score)
+
+hist(SR_Score)
+hist(LI_Score)
+```
+
+
+
+
+
+
+
+
+
